@@ -16,6 +16,8 @@ namespace BlazingTrails.Shared.Features.ManageTrails
         {
             RuleFor(x => x.Trail)
             .SetValidator(new TrailValidator());
+
+
         }
     }
 }
