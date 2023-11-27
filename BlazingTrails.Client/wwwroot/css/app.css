@@ -2,17 +2,6 @@
     color: red;
 }
 
-input.invalid,
-textarea.invalid,
-select.invalid {
-    border-color: red;
-}
-
-input.valid.modified,
-text.valid.modified,
-select.valid.modified {
-    border-color: green;
-}
 
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
