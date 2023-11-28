@@ -64,7 +64,13 @@ else if (_errorMessage is not null)
             <InputText @bind-Value="_trail.Location" class="form-control" id="trailLocation" />
             <ValidationMessage For="@(() => _trail.Location)" />
         </FormFieldSet>
-
+        <FormFieldSet>
+            <label for="trailImage" class="font-weight-bold text-secondary">
+                Image
+            </label>
+            <InputFile OnChange="LoadTrailImage" class="form-control-file"
+                       id="trailImage" accept=".png,.jpg,.jpeg" />
+        </FormFieldSet>
     </FormSection>
 
     <FormSection Title="Difficulty"
@@ -79,7 +85,7 @@ else if (_errorMessage is not null)
             <label for="trailTime" class="font-weight-bold text-secondary">Time</label>
             <InputTime @bind-Value="_trail.TimeInMinutes" id="trailTime" />
             <ValidationMessage For="@(() => _trail.TimeInMinutes)" />
-            </FormFieldSet>
+        </FormFieldSet>
     </FormSection>
 
     <FormSection Title="Route Instructions"
@@ -180,8 +186,40 @@ else if (_errorMessage is not null)
             return;
         }
 
-        _trail = new TrailDto();
-        _errorMessage = null;
+        if (_trailImage is null)
+        {
+            _submitSuccessful = true;
+            ResetForm();
+            return;
+        }
+
+        await ProcessImage(response.TrailId);
+    }
+
+    private async Task ProcessImage(int trailId)
+    {
+        var imageUploadResponse = await Mediator.Send(new UploadTrailImageRequest(trailId, _trailImage));
+
+        if (string.IsNullOrWhiteSpace(imageUploadResponse.ImageName))
+        {
+            _errorMessage = "Your trail was saved, but there was a problem uploading the image.";
+            return;
+        }
+
         _submitSuccessful = true;
-    }  
+        ResetForm();
+    }
+    private void ResetForm()
+    {
+        _trail = new TrailDto();
+        _editContext = new EditContext(_trail);
+        _editContext.SetFieldCssClassProvider(
+                new BootstrapCssClassProvider());
+        _trailImage = null;
+    }
+
+    private IBrowserFile? _trailImage;
+
+    private void LoadTrailImage(InputFileChangeEventArgs e)
+        => _trailImage = e.File;
 }
