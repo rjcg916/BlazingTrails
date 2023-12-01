@@ -22,12 +22,29 @@
             <InputText @bind-Value="_trail.Location" class="form-control" id="trailLocation" />
             <ValidationMessage For="@(() => _trail.Location)" />
         </FormFieldSet>
-        <FormFieldSet>
+
+        <FormFieldSet Width="col-6">
             <label for="trailImage" class="font-weight-bold text-secondary">
-                Image
+                ➥Image
             </label>
-            <InputFile OnChange="LoadTrailImage" class="form-control-file"
-                       id="trailImage" accept=".png,.jpg,.jpeg" />
+            @if (string.IsNullOrWhiteSpace(_trail.Image))
+            {
+                <InputFile OnChange="LoadTrailImage"
+                           ➥class="form-control-file" id="trailImage"
+                           ➥accept=".png,.jpg,.jpeg" />
+            }
+            else
+            {
+                <div class="card bg-dark text-white">
+                    <img src="images/@_trail.Image" />
+                    <div class="card-img-overlay">
+                        <button class="btn btn-primary btn-sm"
+                                ➥@onclick="RemoveTrailImage">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            }
         </FormFieldSet>
     </FormSection>
 
@@ -92,8 +109,7 @@
 
         <div class="row">
             <div class="col">
-                <button class="btn btn-outline-primary"
-                        type="button"
+                <button class="btn btn-outline-primary" type="button"
                         @onclick="@(() => _trail.Route.Add(new TrailDto.RouteInstruction()))">
                     Add Instruction
                 </button>
@@ -119,7 +135,6 @@
     </div>
 </EditForm>
 
-
 @code {
     private TrailDto _trail = new TrailDto();
     private IBrowserFile? _trailImage;
@@ -127,6 +142,8 @@
 
     [Parameter]
     public Func<TrailDto, IBrowserFile?, Task> OnSubmit { get; set; }
+    [Parameter]
+    public TrailDto? Trail { get; set; }
 
     public void ResetForm()
     {
@@ -140,13 +157,46 @@
     protected override void OnInitialized()
     {
         _editContext = new EditContext(_trail);
-        _editContext.SetFieldCssClassProvider(
-        new BootstrapCssClassProvider());
+        _editContext.SetFieldCssClassProvider(new BootstrapCssClassProvider());
     }
-
-    private void LoadTrailImage(InputFileChangeEventArgs e)
-        => _trailImage = e.File;
 
     private async Task SubmitForm()
         => await OnSubmit(_trail, _trailImage);
+
+    protected override void OnParametersSet()
+    {
+        _editContext = new EditContext(_trail);
+        _editContext.SetFieldCssClassProvider(new BootstrapCssClassProvider());
+
+        if (Trail != null)
+        {
+            _trail.Id = Trail.Id;
+            _trail.Name = Trail.Name;
+            _trail.Description = Trail.Description;
+            _trail.Location = Trail.Location;
+            _trail.Image = Trail.Image;
+            _trail.ImageAction = ImageAction.None;
+            _trail.Length = Trail.Length;
+            _trail.TimeInMinutes = Trail.TimeInMinutes;
+
+            _trail.Route.Clear();
+            _trail.Route.AddRange(Trail.Route.Select(ri =>
+            new TrailDto.RouteInstruction
+                {
+                    Stage = ri.Stage,
+                    Description = ri.Description
+                }));
+        }
+    }
+    private void LoadTrailImage(InputFileChangeEventArgs e)
+    {
+        _trailImage = e.File;
+        _trail.ImageAction = ImageAction.Add;
+    }
+
+    private void RemoveTrailImage()
+    {
+        _trail.Image = null;
+        _trail.ImageAction = ImageAction.Remove;
+    }
 }

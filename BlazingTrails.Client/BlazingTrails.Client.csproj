@@ -17,8 +17,4 @@
     <ProjectReference Include="..\BlazingTrails.Shared\BlazingTrails.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\ManageTrails\EditTrail\" />
-  </ItemGroup>
-
 </Project>

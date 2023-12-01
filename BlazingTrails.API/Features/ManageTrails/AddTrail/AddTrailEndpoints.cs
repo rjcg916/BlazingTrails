@@ -1,16 +1,15 @@
 ﻿using Ardalis.ApiEndpoints;
 using BlazingTrails.API.Persistence;
 using BlazingTrails.API.Persistence.Entities;
-using BlazingTrails.Shared.Features.ManageTrails;
+using BlazingTrails.Shared.Features.ManageTrails.AddTrail;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BlazingTrails.API.Features.ManageTrails
+namespace BlazingTrails.API.Features.ManageTrails.AddTrail
 {
     public class AddTrailEndpoint(BlazingTrailsContext database) : EndpointBaseAsync
         .WithRequest<AddTrailRequest>
         .WithActionResult<int>
     {
-        private readonly BlazingTrailsContext _database = database;
 
         [HttpPost(AddTrailRequest.RouteTemplate)]
         public override async Task<ActionResult<int>> HandleAsync(
@@ -26,7 +25,7 @@ namespace BlazingTrails.API.Features.ManageTrails
                 Length = request.Trail.Length
             };
 
-            await _database.Trails.AddAsync(trail, cancellationToken);
+            await database.Trails.AddAsync(trail, cancellationToken);
 
             var routeInstructions = request.Trail.Route
                                             .Select(x => new RouteInstruction
@@ -36,8 +35,8 @@ namespace BlazingTrails.API.Features.ManageTrails
                                                 Trail = trail
                                             });
 
-            await _database.RouteInstructions.AddRangeAsync(routeInstructions, cancellationToken);
-            await _database.SaveChangesAsync(cancellationToken);
+            await database.RouteInstructions.AddRangeAsync(routeInstructions, cancellationToken);
+            await database.SaveChangesAsync(cancellationToken);
 
             return Ok(trail.Id);
         }
