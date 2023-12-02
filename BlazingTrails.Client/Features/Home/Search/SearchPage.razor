@@ -1,5 +1,5 @@
 ﻿@page "/search/{SearchTerm}"
-@inject HttpClient Http
+@inject IMediator Mediator
 @inject NavigationManager NavManager
 
 <nav aria-label="breadcrumb">
@@ -30,7 +30,7 @@ else
 }
 
 @code {
-    private IEnumerable<Trail> _searchResults =Array.Empty<Trail>();
+    private IEnumerable<Trail> _searchResults = Array.Empty<Trail>();
 
     private Trail? _selectedTrail;
 
@@ -42,19 +42,34 @@ else
     {
         try
         {
-            var allTrails = await Http.GetFromJsonAsync<IEnumerable<Trail>>("trails/trail-data.json");
-            _searchResults = allTrails!.Where(x => x.Name.Contains(SearchTerm, StringComparison.CurrentCultureIgnoreCase)
-                                            || x.Location.Contains(SearchTerm, StringComparison.CurrentCultureIgnoreCase));
+            var response = await Mediator.Send(new GetTrailsRequest());
+            var allTrails = response.Trails.Select(x => new Trail
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Image = x.Image,
+                    Description = x.Description,
+                    Location = x.Location,
+                    Length = x.Length,
+                    TimeInMinutes = x.TimeInMinutes
+                });
+
+            _searchResults = allTrails.Where(x => x.Name
+                                .Contains(SearchTerm, StringComparison.CurrentCultureIgnoreCase)
+                                       || x.Location
+                                .Contains(SearchTerm, StringComparison.CurrentCultureIgnoreCase));
+
+            UpdateFilters();
         }
         catch (HttpRequestException ex)
         {
-            Console.WriteLine($"There was a problem loading trail data: {ex.Message}");
+            Console.WriteLine($"There was a problem loading trail data:{ex.Message}");
         }
     }
 
     protected override void OnParametersSet()
         => UpdateFilters();
-    
+
     private void UpdateFilters()
     {
         var filters = new List<Func<Trail, bool>>();
@@ -73,7 +88,7 @@ else
         {
             _searchResults = _searchResults
             .Where(trail => filters.All(filter => filter(trail)));
-        }    
+        }
     }
 
     private void HandleTrailSelected(Trail trail)
