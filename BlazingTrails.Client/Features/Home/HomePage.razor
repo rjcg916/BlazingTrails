@@ -11,7 +11,6 @@ else
     <TrailDetails Trail="_selectedTrail" />
     <TrailSearch />
 
-
     @if (_trails.Any())
     {
         <div class="mb-4">
@@ -20,48 +19,34 @@ else
                 <a href="add-trail">Add it here</a>.
             </p>
         </div>
-        <ViewSwitcher>
+        <ViewSwitcher Items="_trails" Context="trail">
             <GridTemplate>
-                <div class="grid">
-                    @foreach (var trail in _trails)
-                    {
-                        <TrailCard Trail="trail" OnSelected="HandleTrailSelected" />
-                    }
-                </div>
+                <TrailCard Trail="trail"
+                           OnSelected="HandleTrailSelected" />
             </GridTemplate>
-            <TableTemplate>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Location</th>
-                            <th>Length</th>
-                            <th>Time</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var trail in _trails)
-                        {
-                            <tr>
-                                <th scope="col">@trail.Name</th>
-                                <td>@trail.Location</td>
-                                <td>@(trail.Length)km</td>
-                                <td>@trail.TimeFormatted</td>
-                                <td class="text-right">
-                                    <button @onclick="@(() => HandleTrailSelected(trail))" title="View" class="btn btn-primary">
-                                        <i class="bi bi-binoculars"></i>
-                                    </button>
-                                    <button @onclick="@(() => NavManager.NavigateTo($"/edit-trail/{trail.Id}"))" title="Edit"
-                                            class="btn btn-outline-secondary">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </TableTemplate>
+            <HeaderTemplate>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Length</th>
+                <th>Time</th>
+                <th></th>
+            </HeaderTemplate>
+            <RowTemplate>
+                <th scope="col">@trail.Name</th>
+                <td>@trail.Location</td>
+                <td>@(trail.Length)km</td>
+                <td>@trail.TimeFormatted</td>
+                <td class="text-right">
+                    <button @onclick="@(() => HandleTrailSelected(trail))" title="View"
+                            class="btn btn-primary">
+                        <i class="bi bi-binoculars"></i>
+                    </button>
+                    <button @onclick="@(() => NavManager.NavigateTo($"/edit-trail/{trail.Id}"))"
+                            title="Edit" class="btn btn-outline-secondary">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </td>
+            </RowTemplate>
         </ViewSwitcher>
     }
     else
