@@ -3,16 +3,12 @@
 <div>
     <div class="mb-3 text-end">
         <div class="btn-group">
-            <button @onclick="@(() =>
-            _mode = ViewMode.Grid)" title="Grid View" type="button"
-                    class="btn @(_mode == ViewMode.Grid ? "btn-secondary"
-            : "btn-outline-secondary")">
+            <button @onclick="@(() => _mode = ViewMode.Grid)" title="Grid View" type="button"
+                    class="btn @(_mode == ViewMode.Grid ? "btn-secondary" : "btn-outline-secondary")">
                 <i class="bi bi-grid-fill"></i>
             </button>
-            <button @onclick="@(() =>
-            _mode = ViewMode.Table)" title="Table View" type="button"
-                    class="btn @(_mode == ViewMode.Table ? "btn-secondary"
-            : "btn-outline-secondary")">
+            <button @onclick="@(() => _mode = ViewMode.Table)" title="Table View" type="button"
+                    class="btn @(_mode == ViewMode.Table ? "btn-secondary" : "btn-outline-secondary")">
                 <i class="bi bi-table"></i>
             </button>
         </div>
@@ -55,11 +51,11 @@
     public IEnumerable<TItem> Items { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public RenderFragment<TItem> GridTemplate {get; set;} = default!;
+    public RenderFragment<TItem> GridTemplate { get; set;} = default!;
 
     [Parameter, EditorRequired]
     public RenderFragment HeaderTemplate { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public RenderFragment<TItem> RowTemplate {get; set; } = default!;        
+    public RenderFragment<TItem> RowTemplate { get; set; } = default!;        
 }
