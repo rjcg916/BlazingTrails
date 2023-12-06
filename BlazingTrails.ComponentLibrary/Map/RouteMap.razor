@@ -1,0 +1,50 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+ 
+<div class="map-wrapper">
+    <div class="controls">
+        <button @onclick="DeleteLastWaypoint"
+                class="btn btn-secondary" title="Delete last waypoint"
+                type="button">
+            <i class="bi bi-trash"></i> Remove Last Waypoint
+        </button>
+    </div>
+    <div style="height: @(Height); width:@(Width);" @ref="_map"></div>
+</div>
+ 
+@code {
+    private ElementReference _map;
+    private IJSObjectReference? _routeMapModule;
+ 
+ 
+    [Parameter] public string Height { get; set; } = "500px";
+    [Parameter] public string Width { get; set; } = "1000px";
+ 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _routeMapModule = await 
+            JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/BlazingTrails.ComponentLibrary/Map/RouteMap.razor.js");
+            await _routeMapModule.InvokeVoidAsync("initialize", _map);
+        }
+    } 
+ 
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_routeMapModule is not null)
+        {
+            await _routeMapModule.DisposeAsync();
+        }
+    } 
+    public async Task DeleteLastWaypoint()
+    {
+        if (_routeMapModule is not null)
+        {
+            var message = await _routeMapModule
+        .InvokeAsync<string>("deleteLastWaypoint", _map);
+            Console.WriteLine(message);
+        }
+    }
+}
