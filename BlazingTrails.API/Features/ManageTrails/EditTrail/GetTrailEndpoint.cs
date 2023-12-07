@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazingTrails.API.Features.ManageTrails.EditTrail
 {
-    public class GetTrailEndpoint(BlazingTrailsContext context) : 
+    public class GetTrailEndpoint(BlazingTrailsContext context) :
         EndpointBaseAsync.WithRequest<int>.WithActionResult<GetTrailRequest.Response>
     {
         [HttpGet(GetTrailRequest.RouteTemplate)]
@@ -14,7 +14,7 @@ namespace BlazingTrails.API.Features.ManageTrails.EditTrail
         HandleAsync(int trailId, CancellationToken cancellationToken = default)
         {
             var trail = await context.Trails
-            .Include(x => x.Route)
+            .Include(x => x.Waypoints)
             .SingleOrDefaultAsync(x => x.Id == trailId,
             cancellationToken: cancellationToken);
 
@@ -31,8 +31,8 @@ namespace BlazingTrails.API.Features.ManageTrails.EditTrail
                 trail.TimeInMinutes,
                 trail.Length,
                 trail.Description,
-                trail.Route.Select(ri => 
-                new GetTrailRequest.RouteInstruction(ri.Id, ri.Stage, ri.Description))));
+                trail.Waypoints.Select(w =>
+                new GetTrailRequest.Waypoint(w.Latitude, w.Longitude))));
 
             return Ok(response);
         }

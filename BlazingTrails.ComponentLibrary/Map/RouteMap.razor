@@ -14,31 +14,27 @@
     </div>
     <div style="height: @(Height); width:@(Width);" @ref="_map"></div>
 </div>
- 
+
 @code {
     private ElementReference _map;
     private IJSObjectReference? _routeMapModule;
     private DotNetObjectReference<RouteMap> _routeMapReference;
- 
-    [Parameter] public string Height {get; set;} = "500px";
-    [Parameter] public string Width {get; set;}  = "1000px";
- 
+
+    [Parameter] public string Height { get; set; } = "500px";
+    [Parameter] public string Width { get; set; } = "1000px";
+
+    [Parameter] public List<LatLong> Waypoints { get; set; } = new List<LatLong>();
+    [Parameter] public EventCallback<LatLong> OnWaypointAdded { get; set; }
+    [Parameter] public EventCallback<LatLong> OnWaypointDeleted { get; set; }
+
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
         if (_routeMapModule is not null)
         {
             await _routeMapModule.DisposeAsync();
         }
-    } 
-    public async Task DeleteLastWaypoint()
-    {
-        if (_routeMapModule is not null)
-        {
-            var message = await _routeMapModule
-        .InvokeAsync<string>("deleteLastWaypoint", _map);
-            Console.WriteLine(message);
-        }
     }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -47,15 +43,27 @@
             _routeMapModule = await JSRuntime
             .InvokeAsync<IJSObjectReference>("import", "./_content/BlazingTrails.ComponentLibrary/Map/RouteMap.razor.js");
             _routeMapReference = DotNetObjectReference.Create(this);
-        
-            await _routeMapModule.InvokeVoidAsync("initialize", _map, _routeMapReference);
+
+            await _routeMapModule.InvokeVoidAsync("initialize", _map, _routeMapReference, Waypoints);
         }
     }
- 
+
     [JSInvokable]
-    public void WaypointAdded(decimal latitude, decimal longitude)
-        => Console.WriteLine($"Added Waypoint - Latitude: {latitude}, Longitude {longitude}");
-    
-    void IDisposable.Dispose() => 
-        _routeMapReference?.Dispose();
+    public async Task WaypointAdded(decimal latitude, decimal longitude)
+      => await OnWaypointAdded.InvokeAsync(new LatLong(latitude, longitude));
+
+
+    public async Task DeleteLastWaypoint()
+    {
+        if (_routeMapModule is not null)
+        {
+            var waypoint = await _routeMapModule
+            .InvokeAsync<LatLong>("deleteLastWaypoint", _map,
+            _routeMapReference);
+            await OnWaypointDeleted.InvokeAsync(waypoint);
+        }
+    }
+
+    void IDisposable.Dispose() => _routeMapReference?.Dispose();
+
 }

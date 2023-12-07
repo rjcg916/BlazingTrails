@@ -63,7 +63,8 @@
     </FormSection>
 
     <FormSection Title="Route" HelpText="Route instructions are a guide for the trail. This helps hikers new to the trail stay on track.">
-        <RouteMap Width="100%" />
+        <InputRouteMap @bind-Value="_trail.Waypoints" />
+        <ValidationMessage For="@(() => _trail.Waypoints)" />
     </FormSection>
 
     <div class="mt-4 mb-5">
@@ -126,14 +127,11 @@
             _trail.ImageAction = ImageAction.None;
             _trail.Length = Trail.Length;
             _trail.TimeInMinutes = Trail.TimeInMinutes;
-
-            _trail.Route.Clear();
-            _trail.Route.AddRange(Trail.Route.Select(ri =>
-            new TrailDto.RouteInstruction
-                {
-                    Stage = ri.Stage,
-                    Description = ri.Description
-                }));
+            _trail.Waypoints.Clear();
+            _trail.Waypoints.AddRange(
+                Trail.Waypoints.Select(wp => 
+                    new TrailDto.WaypointDto(wp.Latitude, wp.Longitude)));
+  
         }
     }
     private void LoadTrailImage(InputFileChangeEventArgs e)

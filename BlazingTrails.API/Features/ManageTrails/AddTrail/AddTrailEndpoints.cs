@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazingTrails.API.Features.ManageTrails.AddTrail
 {
-    public class AddTrailEndpoint(BlazingTrailsContext database) : EndpointBaseAsync
+    public class AddTrailEndpoint(BlazingTrailsContext context) : EndpointBaseAsync
         .WithRequest<AddTrailRequest>
         .WithActionResult<int>
     {
@@ -22,21 +22,17 @@ namespace BlazingTrails.API.Features.ManageTrails.AddTrail
                 Description = request.Trail.Description,
                 Location = request.Trail.Location,
                 TimeInMinutes = request.Trail.TimeInMinutes,
-                Length = request.Trail.Length
+                Length = request.Trail.Length,
+                Waypoints = request.Trail.Waypoints.Select(
+                    wp => new Waypoint
+                    {
+                        Latitude = wp.Latitude,
+                        Longitude = wp.Longitude
+                    }).ToList()
             };
 
-            await database.Trails.AddAsync(trail, cancellationToken);
-
-            var routeInstructions = request.Trail.Route
-                                            .Select(x => new RouteInstruction
-                                            {
-                                                Stage = x.Stage,
-                                                Description = x.Description,
-                                                Trail = trail
-                                            });
-
-            await database.RouteInstructions.AddRangeAsync(routeInstructions, cancellationToken);
-            await database.SaveChangesAsync(cancellationToken);
+            await context.Trails.AddAsync(trail, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
             return Ok(trail.Id);
         }

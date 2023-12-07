@@ -8,15 +8,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazingTrails.API.Features.ManageTrails.EditTrail
 {
-    public class EditTrailEndpoint(BlazingTrailsContext database) :
+    public class EditTrailEndpoint(BlazingTrailsContext context) :
                 EndpointBaseAsync.WithRequest<EditTrailRequest>.WithActionResult<bool>
     {
         [HttpPut(EditTrailRequest.RouteTemplate)]
         public override async Task<ActionResult<bool>> HandleAsync(EditTrailRequest request,
                                 CancellationToken cancellationToken = default)
         {
-            var trail = await database.Trails
-                                        .Include(x => x.Route)
+            var trail = await context.Trails
+                                        .Include(x => x.Waypoints)
                                         .SingleOrDefaultAsync(x => x.Id == request.Trail.Id,
                                         cancellationToken: cancellationToken);
             if (trail is null)
@@ -29,14 +29,13 @@ namespace BlazingTrails.API.Features.ManageTrails.EditTrail
             trail.Location = request.Trail.Location;
             trail.TimeInMinutes = request.Trail.TimeInMinutes;
             trail.Length = request.Trail.Length;
-            trail.Route = request.Trail.Route.Select(
-                ri => new RouteInstruction
-                {
-                    Stage = ri.Stage,
-                    Description = ri.Description,
-                    Trail = trail
-                }).ToList();
- 
+            trail.Waypoints = request.Trail.Waypoints.Select(
+                                wp => new Waypoint
+                                       {
+                                        Latitude = wp.Latitude,
+                                        Longitude = wp.Longitude
+                                        }).ToList();
+
             if (request.Trail.ImageAction == ImageAction.Remove)
             {
                 System.IO.File.Delete(Path.Combine(
@@ -45,7 +44,7 @@ namespace BlazingTrails.API.Features.ManageTrails.EditTrail
                 trail.Image = null;
             }
 
-            await database.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
             return Ok(true);
         }

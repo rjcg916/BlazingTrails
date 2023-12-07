@@ -15,7 +15,7 @@ namespace BlazingTrails.API.Features.Home.Shared
             HandleAsync(int trailId, CancellationToken cancellationToken = default)
         {
             var trails = await context.Trails
-                                        .Include(x => x.Route)
+                                        .Include(x => x.Waypoints)
                                         .ToListAsync(cancellationToken);
 
             var response = new GetTrailsRequest
