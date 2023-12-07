@@ -1,6 +1,5 @@
-﻿export function initialize(hostElement) {
-    hostElement.map = L.map(hostElement)
-    .setView([51.700, -0.10], 3);
+﻿export function initialize(hostElement, routeMapComponent) {
+    hostElement.map = L.map(hostElement).setView([51.700, -0.10], 3);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href = "https://www.openstreetmap.org/copyright" > OpenStreetMap</a>contributors',
@@ -15,15 +14,15 @@
         let waypoint = L.marker(e.latlng);
         waypoint.addTo(hostElement.map);
         hostElement.waypoints.push(waypoint);
-        let line = L.polyline(hostElement.waypoints.map(m => m.getLatLng()), 
-                { color: 'var(--brand)' }).addTo(hostElement.map);
+        let line = L.polyline(hostElement.waypoints.map(m => m.getLatLng()), { color: 'var(--brand)' }).addTo(hostElement.map);
         hostElement.lines.push(line);
+
+        routeMapComponent.invokeMethodAsync('WaypointAdded', e.latlng.lat, e.latlng.lng);
     });
 }
 export function deleteLastWaypoint(hostElement) {
     if (hostElement.waypoints.length > 0) {
-        let lastWaypoint = hostElement.waypoints[
-        hostElement.waypoints.length - 1];
+        let lastWaypoint = hostElement.waypoints[hostElement.waypoints.length - 1];
         hostElement.map.removeLayer(lastWaypoint);
         hostElement.waypoints.pop();
 
