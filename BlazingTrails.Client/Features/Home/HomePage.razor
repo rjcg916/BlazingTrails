@@ -2,6 +2,7 @@
 @inject IMediator Mediator
 @inject NavigationManager NavManager
 
+
 @if (_trails == null)
 {
     <p>Loading trails...</p>
@@ -88,7 +89,10 @@ else
                     Description = x.Description,
                     Location = x.Location,
                     Length = x.Length,
-                    TimeInMinutes = x.TimeInMinutes
+                    TimeInMinutes = x.TimeInMinutes,
+                    Waypoints = x.Waypoints.Select(wp => new
+                   BlazingTrails.ComponentLibrary.Map.LatLong(
+                   wp.Latitude, wp.Longitude)).ToList()
                 });
         }
         catch (HttpRequestException ex)

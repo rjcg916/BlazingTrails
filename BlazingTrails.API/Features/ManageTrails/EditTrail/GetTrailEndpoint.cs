@@ -13,8 +13,7 @@ namespace BlazingTrails.API.Features.ManageTrails.EditTrail
         public override async Task<ActionResult<GetTrailRequest.Response>>
         HandleAsync(int trailId, CancellationToken cancellationToken = default)
         {
-            var trail = await context.Trails
-            .Include(x => x.Waypoints)
+            var trail = await context.Trails.Include(x => x.Waypoints)
             .SingleOrDefaultAsync(x => x.Id == trailId,
             cancellationToken: cancellationToken);
 
