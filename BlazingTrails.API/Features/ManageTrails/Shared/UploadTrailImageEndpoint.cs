@@ -3,6 +3,8 @@ using BlazingTrails.API.Persistence;
 using BlazingTrails.Shared.Features.ManageTrails.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace BlazingTrails.API.Features.ManageTrails.Shared
 {
