@@ -26,8 +26,9 @@ namespace BlazingTrails.API.Features.Home.Shared
                 trail.Location,
                 trail.TimeInMinutes,
                 trail.Length,
-                trail.Description,
-                trail.Waypoints.Select(wp => new GetTrailsRequest.Waypoint(wp.Latitude, wp.Longitude)).ToList()
+                trail.Description,                
+                trail.Waypoints.Select(wp => new GetTrailsRequest.Waypoint(wp.Latitude, wp.Longitude)).ToList(),
+                trail.Owner
             )));
             return Ok(response);
         }

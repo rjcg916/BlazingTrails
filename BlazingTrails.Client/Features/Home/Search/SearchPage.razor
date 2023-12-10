@@ -51,7 +51,8 @@ else
                     Description = x.Description,
                     Location = x.Location,
                     Length = x.Length,
-                    TimeInMinutes = x.TimeInMinutes
+                    TimeInMinutes = x.TimeInMinutes,
+                    Owner = x.Owner
                 });
 
             _searchResults = allTrails.Where(x => x.Name
