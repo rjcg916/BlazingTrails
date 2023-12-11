@@ -9,8 +9,9 @@ namespace BlazingTrails.Shared.Features.ManageTrails.Shared
         {
             try
             {
-                var client = httpClientFactory.CreateClient(HttpService.SecureAPIClient);
 
+                var client = httpClientFactory.CreateClient(HttpService.SecureAPIClient);
+                
                 return await client
                 .GetFromJsonAsync<GetTrailRequest.Response>(
                 GetTrailRequest.RouteTemplate.Replace("{trailId}", request.TrailId.ToString()));

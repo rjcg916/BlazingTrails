@@ -1,5 +1,4 @@
-﻿using BlazingTrails.Shared.Features.ManageTrails.Shared;
-using MediatR;
+﻿using MediatR;
 
 namespace BlazingTrails.Shared.Features.ManageTrails.Shared
 {

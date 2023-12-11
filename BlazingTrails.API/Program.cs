@@ -21,6 +21,7 @@ builder.Services.AddAuthentication(options =>
     options.Audience = builder.Configuration["Auth0:ApiIdentifier"];
 });
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -50,4 +51,3 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
-

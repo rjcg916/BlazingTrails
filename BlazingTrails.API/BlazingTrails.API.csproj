@@ -16,10 +16,11 @@
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
   </ItemGroup>
    <ItemGroup>
-     <ProjectReference Include="..\BlazingTrails.Client\BlazingTrails.Client.csproj" />
-   </ItemGroup>
-   <ItemGroup>
      <Folder Include="Images\" />
      <Folder Include="Persistence\Data\" />
+   </ItemGroup>
+   <ItemGroup>
+     <ProjectReference Include="..\BlazingTrails.Client\BlazingTrails.Client.csproj" />
+     <ProjectReference Include="..\BlazingTrails.Shared\BlazingTrails.Shared.csproj" />
    </ItemGroup>
 </Project>
