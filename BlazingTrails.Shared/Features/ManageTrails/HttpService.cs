@@ -9,5 +9,6 @@ namespace BlazingTrails.Shared.Features.ManageTrails
     public class HttpService
     {
         public const string SecureAPIClient = "SecureAPIClient";
+        public const string UnsecuredAPIClient = "UnsecuredAPIClient";
     }
 }
