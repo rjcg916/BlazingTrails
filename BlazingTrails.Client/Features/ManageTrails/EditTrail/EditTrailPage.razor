@@ -1,4 +1,6 @@
 ﻿@page "/edit-trail/{TrailId:int}"
+@attribute [Authorize]
+
 @inject IMediator Mediator
 
 <PageTitle>Edit Trail - Blazing Trails</PageTitle>

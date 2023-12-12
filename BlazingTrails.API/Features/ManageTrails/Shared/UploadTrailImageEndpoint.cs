@@ -1,8 +1,11 @@
 ﻿using Ardalis.ApiEndpoints;
 using BlazingTrails.API.Persistence;
 using BlazingTrails.Shared.Features.ManageTrails.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace BlazingTrails.API.Features.ManageTrails.Shared
 {
@@ -10,6 +13,7 @@ namespace BlazingTrails.API.Features.ManageTrails.Shared
         .WithRequest<int>.WithActionResult<string>
 
     {
+        [Authorize]
         [HttpPost(UploadTrailImageRequest.RouteTemplate)]
         public override async Task<ActionResult<string>> HandleAsync([FromRoute]
             int trailId, CancellationToken cancellationToken = default)
@@ -27,6 +31,9 @@ namespace BlazingTrails.API.Features.ManageTrails.Shared
             {
                 return BadRequest("No image found.");
             }
+
+            if (!trail.Owner.Equals(HttpContext.User.Identity!.Name, StringComparison.OrdinalIgnoreCase))
+                return Unauthorized();
 
             var filename = $"{Guid.NewGuid()}.jpg";
             var saveLocation = Path.Combine(Directory

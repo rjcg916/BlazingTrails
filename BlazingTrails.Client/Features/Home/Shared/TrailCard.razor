@@ -9,19 +9,25 @@
             <span><span class="oi oi-clock mr-2"></span> @Trail.TimeFormatted</span>
             <span><span class="oi oi-infinity mr-2"></span> @Trail.Length km</span>
         </div>
-        <button class="btn btn-primary" title="View" 
-            @onclick="@(async () => await OnSelected.InvokeAsync(Trail))">
+        <button class="btn btn-primary" title="View"
+                @onclick="@(async () => await OnSelected.InvokeAsync(Trail))">
             <i class="bi bi-binoculars"></i>
         </button>
-        <button class="btn btn-outline-secondary float-right" title="Edit" 
-            @onclick="@(() => NavManager.NavigateTo($"/edit-trail/{Trail.Id}"))">
-            Update</button>
+        <AuthorizeView>
+            @if (Trail.Owner.Equals(context.User.Identity?.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                <button class="btn btn-outline-secondary float-right"  title="Edit" 
+                        @onclick="@(() => NavManager.NavigateTo($"/edit-trail/{Trail.Id}"))">
+                        <i class="bi bi-pencil"></i>
+                </button>
+            }
+        </AuthorizeView>        
     </div>
 </div>
- 
+
 @code {
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public Trail Trail { get; set; } = default!;
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public EventCallback<Trail> OnSelected { get; set; }
 }

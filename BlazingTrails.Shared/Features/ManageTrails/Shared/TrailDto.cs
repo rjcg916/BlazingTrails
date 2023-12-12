@@ -41,5 +41,4 @@ namespace BlazingTrails.Shared.Features.ManageTrails.Shared
             RuleFor(x => x.Waypoints).NotEmpty().WithMessage("Please add a waypoint");
           }
     }
-
 }
