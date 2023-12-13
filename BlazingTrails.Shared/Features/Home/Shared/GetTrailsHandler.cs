@@ -5,13 +5,20 @@ using System.Net.Http.Json;
 
 namespace BlazingTrails.Client.Features.Home.Shared
 {
-    public class GetTrailsHandler(IHttpClientFactory httpClientFactory) : IRequestHandler<GetTrailsRequest, GetTrailsRequest.Response?>
+    public class GetTrailsHandler : IRequestHandler<GetTrailsRequest, GetTrailsRequest.Response?>
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+        public GetTrailsHandler(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+
+        }
+
         public async Task<GetTrailsRequest.Response?> Handle(GetTrailsRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var client = httpClientFactory.CreateClient(HttpService.UnsecuredAPIClient);
+                var client = _httpClientFactory.CreateClient(HttpService.UnsecuredAPIClient);
 
                 return await client
                 .GetFromJsonAsync<GetTrailsRequest.Response>(GetTrailsRequest.RouteTemplate, cancellationToken);

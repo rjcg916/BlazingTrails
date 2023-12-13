@@ -7,15 +7,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazingTrails.API.Features.ManageTrails.EditTrail
 {
-    public class GetTrailEndpoint(BlazingTrailsContext context) :
+    public class GetTrailEndpoint :
         EndpointBaseAsync.WithRequest<int>.WithActionResult<GetTrailRequest.Response>
     {
+        BlazingTrailsContext _context;
+        public GetTrailEndpoint(BlazingTrailsContext context)
+        {
+            _context = context;
+        }
+
+
         [Authorize]
         [HttpGet(GetTrailRequest.RouteTemplate)]
         public override async Task<ActionResult<GetTrailRequest.Response>>
         HandleAsync(int trailId, CancellationToken cancellationToken = default)
         {
-            var trail = await context.Trails.Include(x => x.Waypoints)
+            var trail = await _context.Trails.Include(x => x.Waypoints)
             .SingleOrDefaultAsync(x => x.Id == trailId,
             cancellationToken: cancellationToken);
 

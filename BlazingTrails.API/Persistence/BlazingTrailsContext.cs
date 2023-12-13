@@ -3,9 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazingTrails.API.Persistence
 {
-    public class BlazingTrailsContext(DbContextOptions<BlazingTrailsContext> options) : 
-        DbContext(options)
+    public class BlazingTrailsContext : DbContext
     {
+        public BlazingTrailsContext(DbContextOptions<BlazingTrailsContext> options) : base(options) { }
+
         public DbSet<Trail> Trails => Set<Trail>();
         public DbSet<Waypoint> Waypoints => Set<Waypoint>();
 

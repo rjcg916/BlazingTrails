@@ -9,16 +9,23 @@ using SixLabors.ImageSharp.Processing;
 
 namespace BlazingTrails.API.Features.ManageTrails.Shared
 {
-    public class UploadTrailImageEndpoint(BlazingTrailsContext database) : EndpointBaseAsync
+    public class UploadTrailImageEndpoint : EndpointBaseAsync
         .WithRequest<int>.WithActionResult<string>
 
     {
+        BlazingTrailsContext _context;
+        public UploadTrailImageEndpoint(BlazingTrailsContext context)
+        {
+            _context = context;
+        }
+
+
         [Authorize]
         [HttpPost(UploadTrailImageRequest.RouteTemplate)]
         public override async Task<ActionResult<string>> HandleAsync([FromRoute]
             int trailId, CancellationToken cancellationToken = default)
         {
-            var trail = await database.Trails
+            var trail = await _context.Trails
                                 .SingleOrDefaultAsync(x => x.Id == trailId,
                                     cancellationToken);
             if (trail is null)
@@ -57,7 +64,7 @@ namespace BlazingTrails.API.Features.ManageTrails.Shared
             }
 
             trail.Image = filename;
-            await database.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Ok(trail.Image);
         }

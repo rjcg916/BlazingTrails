@@ -2,8 +2,14 @@
 
 namespace BlazingTrails.Shared.Features.ManageTrails.Shared
 {
-    public class UploadTrailImageHandler(IHttpClientFactory httpClientFactory) : IRequestHandler<UploadTrailImageRequest, UploadTrailImageRequest.Response>
+    public class UploadTrailImageHandler : IRequestHandler<UploadTrailImageRequest, UploadTrailImageRequest.Response>
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+        public UploadTrailImageHandler(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+
+        }
 
         public async Task<UploadTrailImageRequest.Response> Handle
                 (UploadTrailImageRequest request, CancellationToken cancellationToken)
@@ -20,7 +26,7 @@ namespace BlazingTrails.Shared.Features.ManageTrails.Shared
                 }
             };
 
-            var response = await httpClientFactory.CreateClient(HttpService.SecureAPIClient)
+            var response = await _httpClientFactory.CreateClient(HttpService.SecureAPIClient)
             .PostAsync(UploadTrailImageRequest.RouteTemplate
             .Replace("{trailId}", request.TrailId.ToString()),
             content, cancellationToken);

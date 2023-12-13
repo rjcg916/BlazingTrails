@@ -9,15 +9,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazingTrails.API.Features.ManageTrails.EditTrail
 {
-    public class EditTrailEndpoint(BlazingTrailsContext context) :
+    public class EditTrailEndpoint :
                 EndpointBaseAsync.WithRequest<EditTrailRequest>.WithActionResult<bool>
     {
+        BlazingTrailsContext _context;
+        public EditTrailEndpoint(BlazingTrailsContext context)
+        {
+            _context = context;
+        }
+
+
         [Authorize]
         [HttpPut(EditTrailRequest.RouteTemplate)]
         public override async Task<ActionResult<bool>> HandleAsync(EditTrailRequest request,
                                 CancellationToken cancellationToken = default)
         {
-            var trail = await context.Trails
+            var trail = await _context.Trails
                                         .Include(x => x.Waypoints)
                                         .SingleOrDefaultAsync(x => x.Id == request.Trail.Id,
                                         cancellationToken: cancellationToken);
@@ -49,7 +56,7 @@ namespace BlazingTrails.API.Features.ManageTrails.EditTrail
                 trail.Image = null;
             }
 
-            await context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Ok(true);
         }

@@ -3,13 +3,19 @@ using MediatR;
 using System.Net.Http.Json;
 namespace BlazingTrails.Shared.Features.ManageTrails
 {
-    public class AddTrailHandler(IHttpClientFactory httpClientFactory) : IRequestHandler<AddTrailRequest, AddTrailRequest.Response>
+    public class AddTrailHandler : IRequestHandler<AddTrailRequest, AddTrailRequest.Response>
     {
-  
+        private readonly IHttpClientFactory _httpClientFactory;
+        public AddTrailHandler(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+
+        }
+
         public async Task<AddTrailRequest.Response>
             Handle(AddTrailRequest request, CancellationToken cancellationToken)
         {
-            var client = httpClientFactory.CreateClient(HttpService.SecureAPIClient);
+            var client = _httpClientFactory.CreateClient(HttpService.SecureAPIClient);
 
             var response = await client.PostAsJsonAsync(AddTrailRequest.RouteTemplate, request, cancellationToken);
 
